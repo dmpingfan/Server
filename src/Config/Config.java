@@ -57,7 +57,11 @@ public class Config {
     public static void main(String[] args)throws IOException{
 
         //SQL
-        WriteProperties("conf/server.properties","sqilte", "jdbc:sqlite://d:/tim.db");
+        WriteProperties("conf/server.properties","sqilte", "jdbc:sqlite://d:/dm.db");
+
+        WriteProperties("conf/server.properties","myurl", "jdbc:mysql://localhost:3306/db1?characterEncoding=utf8&useSSL=false");
+        WriteProperties("conf/server.properties","myusername", "root");
+        WriteProperties("conf/server.properties","mypassword", "123456");
 
         //SSL
         WriteProperties("conf/server.properties","kspath", "keytool/kserver.keystore");

@@ -1,10 +1,13 @@
 package SSL;
 
 import Config.Config;
+import Json.RegisterRequest;
+import Json.RegisterResponse;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -51,8 +54,22 @@ public class TestSSLSocketServer {
             while (flag) {
                 Socket s = ss.accept();
                 System.out.println("接收到客户端连接");
+
+                ObjectInputStream br = new ObjectInputStream(s.getInputStream());
+                try {
+                    String res= br.readObject().toString();
+                    RegisterRequest registerRequest=new RegisterRequest(res);
+                    System.out.println(res);
+                    System.out.println(registerRequest.getCommand());
+                    System.out.println(registerRequest.getId());
+                    System.out.println(registerRequest.getPasswd());
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                RegisterResponse registerResponse=new RegisterResponse("Register", "00", "注册成功");
+                String s1=registerResponse.toString();
                 ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
-                os.writeObject("echo : Hello");
+                os.writeObject(s1);
                 os.flush();
                 os.close();
                 System.out.println();

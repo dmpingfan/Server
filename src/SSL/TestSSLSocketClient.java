@@ -1,11 +1,14 @@
 package SSL;
 
 import Config.Config;
+import Json.RegisterRequest;
+import Json.RegisterResponse;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 
@@ -17,10 +20,13 @@ public class TestSSLSocketClient {
     private static String tpath = Config.GetValueByKey("conf/server.properties","tcpath");
     private static char[] password = Config.GetValueByKey("conf/server.properties","clientpwd").toCharArray();
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
+        run();
+    }
+    /**
+     * @param
+     */
+    public static void run() {
         SSLContext context = null;
         try {
             KeyStore ks = KeyStore.getInstance("JKS");
@@ -48,14 +54,25 @@ public class TestSSLSocketClient {
             //ss.setUseClientMode(true);
             //ss.setWantClientAuth(true);
             System.out.println("客户端就绪。");
+            ObjectOutputStream os = new ObjectOutputStream(ss.getOutputStream());
+            RegisterRequest registerRequest=new RegisterRequest("Register", "1", "1");
+            String s=registerRequest.toString();
+            System.out.println(s);
+            os.writeObject(s);
             ObjectInputStream br = new ObjectInputStream(ss.getInputStream());
             try {
-                System.out.println(br.readObject());
+                String res= br.readObject().toString();
+                System.out.println(res);
+                RegisterResponse registerResponse=new RegisterResponse(res);
+                System.out.println(registerResponse.getCommand());
+                System.out.println(registerResponse.getErrorMsg());
+                System.out.println(registerResponse.getResult());
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
             br.close();
             ss.close();
+            os.close();
             System.out.println("客户端测试ok");
         } catch (UnknownHostException e) {
             e.printStackTrace();
